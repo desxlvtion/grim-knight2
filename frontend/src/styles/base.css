@@ -1,0 +1,1766 @@
+/* ============================================
+   GRIM KNIGHT — Базовая тема
+   Мрачное фэнтези. Без emoji. Без скруглений.
+   ============================================ */
+
+:root {
+  /* Фоны */
+  --bg-deep:     #0a0a0c;
+  --bg-panel:    #141418;
+  --bg-slot:     #1a1a1f;
+  --bg-slot-hi:  #232329;
+
+  /* Границы */
+  --border:      #2a2a30;
+  --border-hi:   #3a3a42;
+
+  /* Текст */
+  --text:        #c8c8cc;
+  --text-dim:    #6a6a72;
+  --text-bright: #e8e8ec;
+
+  /* Акценты */
+  --blood:       #8b1a1a;
+  --poison:      #3a5a2a;
+  --magic:       #4a3a6a;
+  --gold:        #8a7a3a;
+
+  /* Редкости */
+  --rarity-common:    #4a4a52;
+  --rarity-uncommon:  #3a8a3a;
+  --rarity-rare:      #3a6ac8;
+  --rarity-epic:      #8a3ac8;
+  --rarity-legendary: #c87a2a;
+
+  /* Шрифты */
+  --font-title:  'Cinzel', serif;
+  --font-body:   'IBM Plex Sans', sans-serif;
+  --font-mono:   'JetBrains Mono', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.015) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.01) 0%, transparent 50%);
+}
+
+#app {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* ============================================
+   Заголовок
+   ============================================ */
+
+.app-header {
+  text-align: center;
+  padding: 24px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.app-title {
+  font-family: var(--font-title);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text-bright);
+  text-transform: uppercase;
+}
+
+.app-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+/* ============================================
+   Раскладка
+   ============================================ */
+
+.app-main {
+  display: grid;
+  grid-template-columns: 280px 490px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .app-main { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 18px;
+}
+
+.panel-title {
+  font-family: var(--font-title);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ============================================
+   Панель статов
+   ============================================ */
+
+.stat-block {
+  margin-bottom: 18px;
+}
+
+.stat-block:last-child {
+  margin-bottom: 0;
+}
+
+.stat-block-title {
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 0;
+  border-bottom: 1px dotted rgba(255,255,255,0.03);
+}
+
+.stat-label {
+  color: var(--text);
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  color: var(--text-bright);
+  font-size: 13px;
+}
+
+.stat-special .stat-value {
+  color: var(--poison);
+}
+
+.set-active-row {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text);
+  padding: 2px 0;
+}
+
+.set-active-threshold {
+  font-family: var(--font-mono);
+  color: var(--gold);
+  min-width: 20px;
+}
+
+.set-active-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.set-active-name {
+  font-family: var(--font-title);
+  font-size: 14px;
+  color: var(--text-bright);
+  flex: 1;
+}
+
+.set-active-count {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--gold);
+}
+
+/* ============================================
+   Экипировка — сетка 3×3, слоты 140×140
+   ============================================ */
+
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 140px);
+  grid-template-rows: repeat(3, 140px);
+  gap: 16px;
+  justify-content: center;
+}
+
+/* Явные позиции слотов */
+.equipment-slot[data-slot="amulet"]     { grid-column: 1; grid-row: 1; }
+.equipment-slot[data-slot="helmet"]     { grid-column: 2; grid-row: 1; }
+.equipment-slot[data-slot="ring"]       { grid-column: 3; grid-row: 1; }
+.equipment-slot[data-slot="hand_left"]  { grid-column: 1; grid-row: 2; }
+.equipment-slot[data-slot="armor"]      { grid-column: 2; grid-row: 2; }
+.equipment-slot[data-slot="hand_right"] { grid-column: 3; grid-row: 2; }
+.equipment-slot[data-slot="legs"]       { grid-column: 2; grid-row: 3; }
+
+.equipment-slot {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  background: var(--bg-slot);
+  border: 1px solid var(--border);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  overflow: hidden;
+}
+
+.equipment-slot.slot-filled {
+  cursor: grab;
+}
+
+.equipment-slot.slot-filled:hover {
+  background: var(--bg-slot-hi);
+}
+
+.equipment-slot.slot-filled:active {
+  cursor: grabbing;
+}
+
+.equipment-slot.slot-dragover {
+  border-color: var(--gold);
+  background: rgba(138, 122, 58, 0.08);
+}
+
+.slot-label {
+  font-family: var(--font-title);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+  line-height: 1.2;
+}
+
+.slot-body {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* Заглушка — полупрозрачный силуэт слота */
+.slot-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.slot-empty .slot-placeholder {
+  opacity: 0.22;
+}
+
+.slot-filled .slot-placeholder {
+  display: none;
+}
+
+/* --- Предмет внутри слота --- */
+
+.slot-item {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.slot-item-icon {
+  display: block;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  transition: filter 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Подсветка иконки по редкости */
+.equipment-slot.rarity-common    .slot-item-icon { filter: none; }
+.equipment-slot.rarity-uncommon  .slot-item-icon {
+  filter: drop-shadow(0 0 3px var(--rarity-uncommon));
+}
+.equipment-slot.rarity-rare      .slot-item-icon {
+  filter: drop-shadow(0 0 5px var(--rarity-rare))
+          drop-shadow(0 0 3px var(--rarity-rare));
+}
+.equipment-slot.rarity-epic      .slot-item-icon {
+  filter: drop-shadow(0 0 7px var(--rarity-epic))
+          drop-shadow(0 0 4px var(--rarity-epic))
+          drop-shadow(0 0 2px var(--rarity-epic));
+}
+.equipment-slot.rarity-legendary .slot-item-icon {
+  filter: drop-shadow(0 0 10px var(--rarity-legendary))
+          drop-shadow(0 0 6px var(--rarity-legendary))
+          drop-shadow(0 0 3px var(--rarity-legendary));
+}
+
+.slot-item-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.slot-item-name-row .set-icon-small {
+  width: 14px;
+  height: 14px;
+}
+
+.slot-item-name {
+  font-size: 10px;
+  color: var(--text-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.slot-item-stars {
+  font-size: 9px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.slot-item-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  max-width: 100%;
+}
+
+.slot-item-stats .slot-stat {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  padding: 0 3px;
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.3);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.slot-item-stats .slot-stat.effect {
+  color: #7aa85a;
+  border-color: #2a3a20;
+}
+
+/* ============================================
+   Инвентарь
+   ============================================ */
+
+.inventory-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 700px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.inventory-card {
+  background: var(--bg-slot);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  cursor: grab;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.inventory-card:hover {
+  background: var(--bg-slot-hi);
+}
+
+.inventory-card:active {
+  cursor: grabbing;
+}
+
+.inventory-card.card-dragover {
+  border-color: var(--gold);
+  background: rgba(138, 122, 58, 0.08);
+}
+
+.inventory-icon {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inventory-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  transition: filter 0.2s ease;
+}
+
+.inventory-card.rarity-common    .inventory-icon img { filter: none; }
+.inventory-card.rarity-uncommon  .inventory-icon img {
+  filter: drop-shadow(0 0 3px var(--rarity-uncommon));
+}
+.inventory-card.rarity-rare      .inventory-icon img {
+  filter: drop-shadow(0 0 5px var(--rarity-rare))
+          drop-shadow(0 0 3px var(--rarity-rare));
+}
+.inventory-card.rarity-epic      .inventory-icon img {
+  filter: drop-shadow(0 0 7px var(--rarity-epic))
+          drop-shadow(0 0 4px var(--rarity-epic))
+          drop-shadow(0 0 2px var(--rarity-epic));
+}
+.inventory-card.rarity-legendary .inventory-icon img {
+  filter: drop-shadow(0 0 10px var(--rarity-legendary))
+          drop-shadow(0 0 6px var(--rarity-legendary))
+          drop-shadow(0 0 3px var(--rarity-legendary));
+}
+
+.inventory-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.inventory-name {
+  font-family: var(--font-title);
+  font-size: 13px;
+  color: var(--text-bright);
+  margin-bottom: 3px;
+}
+
+.inventory-card.rarity-uncommon  .inventory-name { color: #7ac87a; }
+.inventory-card.rarity-rare      .inventory-name { color: #7aa8e8; }
+.inventory-card.rarity-epic      .inventory-name { color: #b87ae8; }
+.inventory-card.rarity-legendary .inventory-name { color: #e8a86a; }
+
+.inventory-meta {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inventory-stars {
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+
+/* ============================================
+   Верхняя панель
+   ============================================ */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+}
+
+.stage-info {
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.hp-info {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* ============================================
+   Кнопки
+   ============================================ */
+
+.btn {
+  font-family: var(--font-title);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border: 1px solid var(--border-hi);
+  background: var(--bg-slot);
+  color: var(--text-bright);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover {
+  border-color: var(--gold);
+  background: var(--bg-slot-hi);
+}
+
+.btn-primary {
+  border-color: var(--blood);
+  color: #e8c8c8;
+}
+
+.btn-primary:hover {
+  border-color: #b02020;
+  background: rgba(139, 26, 26, 0.15);
+}
+
+.btn-secondary {
+  border-color: var(--border);
+  color: var(--text-dim);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Мусорка
+   ============================================ */
+
+.trash-zone {
+  width: 120px;
+  height: 120px;
+  margin: 16px auto 0;
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  cursor: not-allowed;
+}
+
+.trash-zone img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+  image-rendering: pixelated;
+}
+
+.trash-zone.trash-dragover {
+  border-color: #4ac8e8;
+  background: rgba(74, 200, 232, 0.1);
+  box-shadow: inset 0 0 24px rgba(74, 200, 232, 0.25);
+}
+
+.trash-zone.trash-dragover img {
+  opacity: 1;
+  filter: drop-shadow(0 0 12px #4ac8e8);
+}
+
+/* ============================================
+   Фильтры инвентаря
+   ============================================ */
+
+.inventory-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-label {
+  font-family: var(--font-title);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  min-width: 64px;
+}
+
+.filter-chip {
+  font-family: var(--font-body);
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-slot);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.filter-chip:hover {
+  border-color: var(--border-hi);
+  color: var(--text);
+}
+
+.filter-chip.active {
+  border-color: var(--gold);
+  color: var(--text-bright);
+  background: rgba(138, 122, 58, 0.12);
+}
+
+.filter-select {
+  font-family: var(--font-body);
+  font-size: 11px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-slot);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sort-btn {
+  width: 100%;
+  margin-bottom: 12px;
+  font-size: 11px;
+  padding: 6px;
+}
+
+/* ============================================
+   Разделители для drag-порядка
+   ============================================ */
+
+.inventory-separator {
+  height: 10px;
+  margin: -4px 0;
+  transition: background 0.1s ease;
+}
+
+.inventory-separator.active {
+  background: #4ac8e8;
+  box-shadow: 0 0 12px #4ac8e8;
+  margin: 4px 0;
+}
+
+/* ============================================
+   Статы на карточках инвентаря
+   ============================================ */
+
+.inventory-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.inventory-stat {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.inventory-stat.effect {
+  color: #7aa85a;
+  border-color: #2a3a20;
+}
+
+/* ============================================
+   Утилиты
+   ============================================ */
+
+.loading {
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 12px 0;
+}
+
+.error {
+  color: var(--blood);
+  padding: 12px 0;
+}
+
+/* ============================================
+   ГЛАВНОЕ МЕНЮ
+   ============================================ */
+
+.main-menu-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.main-menu-card {
+  background: rgba(10, 10, 12, 0.92);
+  border: 1px solid var(--gold);
+  padding: 48px 64px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
+}
+
+.main-menu-title {
+  font-family: var(--font-title);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+}
+
+.main-menu-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+}
+
+.main-menu-save-info {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.main-menu-btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 14px;
+  font-size: 14px;
+}
+
+.main-menu-btn:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   КНОПКИ МЬЮТА
+   ============================================ */
+
+.audio-controls {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.audio-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: rgba(10, 10, 12, 0.85);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.audio-btn:hover {
+  border-color: var(--gold);
+  color: var(--text-bright);
+}
+
+.audio-btn.muted {
+  color: var(--text-dim);
+  border-color: var(--border);
+  opacity: 0.5;
+}
+
+/* ============================================
+   ИКОНКИ СЕТОВ
+   ============================================ */
+
+.set-icon-small {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.set-active-header img.set-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+/* ============================================
+   ПАНЕЛЬ СЕТОВ
+   ============================================ */
+
+.sets-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sets-panel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border: 1px solid transparent;
+  cursor: help;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sets-panel-row:hover {
+  border-color: var(--gold);
+  background: rgba(138, 122, 58, 0.08);
+}
+
+.sets-panel-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+.sets-panel-count {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--gold);
+}
+
+.sets-panel-empty {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 12px;
+  padding: 8px 0;
+}
+
+/* ============================================
+   ТУЛТИП СЕТА
+   ============================================ */
+
+.custom-tooltip {
+  position: fixed;
+  z-index: 2000;
+  max-width: 320px;
+  padding: 12px 14px;
+  background: rgba(10, 10, 12, 0.96);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.set-tooltip-title {
+  font-family: var(--font-title);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.set-tooltip-row {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 3px 0;
+  line-height: 1.4;
+}
+
+.set-tooltip-row.active {
+  color: var(--text-bright);
+}
+
+.set-tooltip-threshold {
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  min-width: 18px;
+  flex-shrink: 0;
+}
+
+.set-tooltip-row.active .set-tooltip-threshold {
+  color: var(--gold);
+}
+
+.set-tooltip-desc {
+  flex: 1;
+}
+
+/* ============================================
+   СУНДУК
+   ============================================ */
+
+.chest-screen {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.chest-title {
+  font-family: var(--font-title);
+  font-size: 28px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-bright);
+  margin-bottom: 8px;
+}
+
+.chest-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.chest-cards {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.chest-card {
+  flex: 0 0 240px;
+  width: 240px;
+  padding: 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chest-card-icon {
+  display: block;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  transition: filter 0.2s ease;
+}
+
+.chest-card-name {
+  font-family: var(--font-title);
+  font-size: 16px;
+  color: var(--text-bright);
+}
+
+.chest-card-meta {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chest-card-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.chest-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.stat-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.chest-card.chest-potion {
+  border-color: #3a8a5a;
+}
+
+.chest-card.chest-potion .chest-card-name {
+  color: #6ac88a;
+}
+
+.chest-card.chest-empty {
+  border-color: #2a2a30;
+  opacity: 0.5;
+}
+
+.chest-card.chest-empty .chest-card-name {
+  color: var(--text-dim);
+}
+
+.chest-card.rarity-common    .chest-card-icon { filter: none; }
+.chest-card.rarity-uncommon  .chest-card-icon { filter: drop-shadow(0 0 4px var(--rarity-uncommon)); }
+.chest-card.rarity-rare      .chest-card-icon {
+  filter: drop-shadow(0 0 6px var(--rarity-rare)) drop-shadow(0 0 3px var(--rarity-rare));
+}
+.chest-card.rarity-epic      .chest-card-icon {
+  filter: drop-shadow(0 0 8px var(--rarity-epic))
+          drop-shadow(0 0 4px var(--rarity-epic))
+          drop-shadow(0 0 2px var(--rarity-epic));
+}
+.chest-card.rarity-legendary .chest-card-icon {
+  filter: drop-shadow(0 0 12px var(--rarity-legendary))
+          drop-shadow(0 0 7px var(--rarity-legendary))
+          drop-shadow(0 0 3px var(--rarity-legendary));
+}
+
+.chest-card.rarity-common    .chest-card-name { color: #c8c8cc; }
+.chest-card.rarity-uncommon  .chest-card-name { color: #7ac87a; }
+.chest-card.rarity-rare      .chest-card-name { color: #7aa8e8; }
+.chest-card.rarity-epic      .chest-card-name { color: #b87ae8; }
+.chest-card.rarity-legendary .chest-card-name { color: #e8a86a; }
+
+/* ============================================
+   BOSS REWARD
+   ============================================ */
+
+.boss-reward-screen {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.boss-reward-title {
+  font-family: var(--font-title);
+  font-size: 32px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.boss-reward-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.boss-reward-cards {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.boss-reward-card {
+  flex: 0 0 280px;
+  width: 280px;
+  padding: 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.boss-reward-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.boss-reward-card-header img.set-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.boss-reward-card-name {
+  font-family: var(--font-title);
+  font-size: 16px;
+  color: var(--text-bright);
+}
+
+.boss-reward-card-counter {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.boss-reward-card-unlock {
+  font-size: 12px;
+  color: var(--gold);
+  line-height: 1.5;
+}
+
+.boss-reward-card-effect {
+  font-size: 12px;
+  color: var(--text);
+  padding-left: 8px;
+  line-height: 1.5;
+}
+
+.boss-reward-card-nothing {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ============================================
+   СВЯТИЛИЩЕ
+   ============================================ */
+
+.sanctuary-screen {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  padding: 24px;
+}
+
+.sanctuary-card {
+  background: rgba(10, 10, 12, 0.92);
+  border: 1px solid var(--gold);
+  padding: 32px 40px;
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(138, 122, 58, 0.25);
+}
+
+.sanctuary-title {
+  font-family: var(--font-title);
+  font-size: 28px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.sanctuary-subtitle {
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.sanctuary-cards {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.sanctuary-bonus-card {
+  flex: 0 0 220px;
+  width: 220px;
+  padding: 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sanctuary-bonus-name {
+  font-family: var(--font-title);
+  font-size: 16px;
+  color: var(--text-bright);
+}
+
+.sanctuary-bonus-desc {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.sanctuary-skip {
+  margin-top: 8px;
+}
+
+/* ============================================
+   ЗОНЫ
+   ============================================ */
+
+.zone-battle {
+  background: linear-gradient(rgba(10, 10, 12, 0.25), rgba(10, 10, 12, 0.6)),
+              url('/assets/backgrounds/dungeon.png') center/cover no-repeat;
+}
+
+/* ============================================
+   ДОПОЛНЕНИЯ
+   ============================================ */
+
+.inventory-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.col-stats,
+.col-equipment,
+.col-inventory {
+  min-width: 0;
+}
+/* ============================================
+   MYTHIC RARITY
+   ============================================ */
+
+/* Инвентарь */
+.inventory-card.rarity-mythic {
+  border-color: #c81a1a;
+  background: rgba(200, 26, 26, 0.06);
+}
+
+.inventory-card.rarity-mythic .inventory-icon img {
+  filter: drop-shadow(0 0 6px #c81a1a)
+          drop-shadow(0 0 12px #c81a1a)
+          drop-shadow(0 0 20px rgba(200, 26, 26, 0.6));
+}
+
+.inventory-card.rarity-mythic .inventory-name {
+  color: #ff4a4a;
+  text-shadow: 0 0 6px rgba(200, 26, 26, 0.7);
+}
+
+/* Экипировка */
+.equipment-slot.rarity-mythic {
+  border-color: #c81a1a;
+  box-shadow: inset 0 0 16px rgba(200, 26, 26, 0.25);
+}
+
+.equipment-slot.rarity-mythic .slot-item-icon {
+  filter: drop-shadow(0 0 6px #c81a1a)
+          drop-shadow(0 0 12px #c81a1a)
+          drop-shadow(0 0 20px rgba(200, 26, 26, 0.6));
+}
+
+.equipment-slot.rarity-mythic .slot-item-name {
+  color: #ff4a4a;
+  text-shadow: 0 0 6px rgba(200, 26, 26, 0.7);
+}
+
+/* Сундук */
+.chest-card.rarity-mythic {
+  border-color: #c81a1a;
+  background: rgba(200, 26, 26, 0.06);
+}
+
+.chest-card.rarity-mythic .chest-card-icon {
+  filter: drop-shadow(0 0 8px #c81a1a)
+          drop-shadow(0 0 16px #c81a1a)
+          drop-shadow(0 0 28px rgba(200, 26, 26, 0.7));
+}
+
+.chest-card.rarity-mythic .chest-card-name {
+  color: #ff4a4a;
+  text-shadow: 0 0 8px rgba(200, 26, 26, 0.8);
+}
+
+/* ============================================
+   АДАПТИВ — ПЛАНШЕТЫ
+   ============================================ */
+
+@media (max-width: 1100px) {
+  #app {
+    padding: 20px 16px;
+  }
+
+  .app-main {
+    grid-template-columns: 240px 380px 1fr;
+    gap: 14px;
+  }
+
+  .equipment-grid {
+    grid-template-columns: repeat(3, 110px);
+    grid-template-rows: repeat(3, 110px);
+    gap: 10px;
+  }
+
+  .equipment-slot {
+    width: 110px;
+    height: 110px;
+  }
+
+  .slot-item-icon {
+    width: 55px;
+    height: 55px;
+  }
+
+  .inventory-list {
+    max-height: 500px;
+  }
+}
+
+/* ============================================
+   АДАПТИВ — ТЕЛЕФОНЫ
+   ============================================ */
+
+@media (max-width: 800px) {
+  #app {
+    padding: 12px 8px;
+  }
+
+  .app-header {
+    padding: 12px 0 16px;
+    margin-bottom: 16px;
+  }
+
+  .app-title {
+    font-size: 24px;
+    letter-spacing: 0.1em;
+  }
+
+  .app-subtitle {
+    font-size: 11px;
+  }
+
+  /* Все три колонки — в столбик */
+  .app-main {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+
+  /* Слоты экипировки — 3 в ряд, меньше */
+  .equipment-grid {
+    grid-template-columns: repeat(3, 90px);
+    grid-template-rows: repeat(3, 90px);
+    gap: 6px;
+  }
+
+  .equipment-slot {
+    width: 90px;
+    height: 90px;
+    padding: 4px;
+  }
+
+  .slot-label {
+    font-size: 7px;
+    margin-bottom: 1px;
+  }
+
+  .slot-item-icon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .slot-item-name {
+    font-size: 8px;
+  }
+
+  .slot-item-stars {
+    font-size: 7px;
+  }
+
+  .slot-item-stats .slot-stat {
+    font-size: 7px;
+    padding: 0 2px;
+  }
+
+  /* Инвентарь */
+  .inventory-list {
+    max-height: 400px;
+  }
+
+  .inventory-card {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .inventory-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .inventory-name {
+    font-size: 12px;
+  }
+
+  .inventory-meta {
+    font-size: 9px;
+  }
+
+  /* Топ-бар */
+  .top-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .stage-info,
+  .hp-info {
+    font-size: 11px;
+  }
+
+  .btn {
+    font-size: 11px;
+    padding: 6px 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Мусорка меньше */
+  .trash-zone {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Фильтры */
+  .filter-chip {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .filter-label {
+    font-size: 9px;
+    min-width: 50px;
+  }
+
+  .filter-select {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+}
+
+/* ============================================
+   АДАПТИВ — УЗКИЕ ТЕЛЕФОНЫ
+   ============================================ */
+
+@media (max-width: 500px) {
+  .equipment-grid {
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap: 5px;
+  }
+
+  .equipment-slot {
+    width: 80px;
+    height: 80px;
+  }
+
+  .slot-item-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-title {
+    font-size: 20px;
+  }
+
+  .inventory-list {
+    max-height: 350px;
+  }
+
+  .btn {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  /* Поле боя фиксированной высоты */
+  .battle-col-field {
+    height: 55vh;
+    min-height: 0;
+    max-height: 500px;
+  }
+
+  /* Герой — внизу слева, меньше */
+  .hero-wrap {
+    left: 8px;
+    bottom: 8px;
+    width: 100px;
+    height: 200px;
+  }
+
+  /* Враги — сверху справа */
+  .enemy-card {
+    width: 100px;
+    padding: 2px;
+  }
+
+  .enemy-sprite {
+    height: 100px;
+  }
+
+  /* Панель игрока — компактная */
+  .battle-player-bar {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    max-width: none;
+    padding: 6px 8px;
+    margin: 0;
+    font-size: 11px;
+    gap: 6px;
+    background: rgba(10, 10, 12, 0.9);
+  }
+
+  .player-hp,
+  .player-armor {
+    font-size: 11px;
+  }
+
+  .effect-badge {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+
+  /* Аудио-кнопки — в правый верхний угол поля, не налезают на HP */
+  .audio-controls {
+    top: auto;
+    bottom: 8px;
+    right: 8px;
+  }
+
+  .audio-btn {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  /* Кнопка «Назад» — в правый верхний угол, маленькая */
+  .battle-screen .btn-secondary {
+    right: 8px;
+    top: 8px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  /* Статы — компактно, скролл */
+  .battle-col-stats,
+  .battle-col-sets {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .stat-row {
+    padding: 1px 0;
+  }
+
+  .stat-label,
+  .stat-value {
+    font-size: 11px;
+  }
+
+  /* Лог — короткий */
+  .battle-log {
+    max-height: 60px;
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}
+
+/* ============================================
+   МОБИЛЬНАЯ ВЕРСИЯ (экипировка, инвентарь)
+   ============================================ */
+
+@media (max-width: 900px) {
+  /* Все колонки — в столбик */
+  .app-main {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Слоты экипировки — меньше, чтобы влезали */
+  .equipment-grid {
+    grid-template-columns: repeat(3, 90px);
+    grid-template-rows: repeat(3, 90px);
+    gap: 6px;
+  }
+
+  .equipment-slot {
+    width: 90px;
+    height: 90px;
+    padding: 4px;
+  }
+
+  .slot-label {
+    font-size: 7px;
+    margin-bottom: 1px;
+  }
+
+  .slot-item-icon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .slot-item-name { font-size: 8px; }
+  .slot-item-stars { font-size: 7px; }
+  .slot-item-stats .slot-stat { font-size: 7px; padding: 0 2px; }
+
+  /* Инвентарь */
+  .inventory-list { max-height: 400px; }
+
+  .inventory-card {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .inventory-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .inventory-name { font-size: 12px; }
+  .inventory-meta { font-size: 9px; }
+
+  /* Топ-бар — в две строки */
+  .top-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .stage-info,
+  .hp-info {
+    font-size: 11px;
+  }
+
+  .btn {
+    font-size: 11px;
+    padding: 6px 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Мусорка */
+  .trash-zone {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Фильтры */
+  .filter-chip { font-size: 10px; padding: 3px 8px; }
+  .filter-label { font-size: 9px; min-width: 50px; }
+  .filter-select { font-size: 10px; padding: 3px 6px; }
+
+  /* Главное меню — карточка на всю ширину */
+  .main-menu-card {
+    padding: 32px 24px;
+    max-width: 90vw;
+  }
+
+  .main-menu-title { font-size: 32px; }
+  .main-menu-subtitle { font-size: 11px; }
+}
+
+@media (max-width: 480px) {
+  .equipment-grid {
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(3, 80px);
+    gap: 5px;
+  }
+
+  .equipment-slot {
+    width: 80px;
+    height: 80px;
+  }
+
+  .slot-item-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-title { font-size: 20px; }
+  .inventory-list { max-height: 350px; }
+
+  .btn {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+}
